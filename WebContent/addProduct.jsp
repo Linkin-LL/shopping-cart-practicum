@@ -13,6 +13,21 @@
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="css/changes.css">
+
+<script>
+    // JavaScript to show/hide 'other' product type input field
+    function toggleOtherInput() {
+        var productType = document.getElementById("producttype").value;
+        var otherInput = document.getElementById("otherType");
+
+        if (productType === "other") {
+            otherInput.style.display = "block";
+        } else {
+            otherInput.style.display = "none";
+        }
+    }
+</script>
+
 </head>
 <body style="background-color: #E6F9E6;">
 	<%
@@ -22,15 +37,10 @@
 	String password = (String) session.getAttribute("password");
 
 	if (userType == null || !userType.equals("admin")) {
-
 		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
-
 	}
-
 	else if (userName == null || password == null) {
-
 		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-
 	}
 	%>
 
@@ -57,16 +67,15 @@
 					}
 					%>
 				</div>
-				<div></div>
+
 				<div class="row">
 					<div class="col-md-6 form-group">
-						<label for="last_name">Product Name</label> <input type="text"
-							placeholder="Enter Product Name" name="name" class="form-control"
-							id="last_name" required>
+						<label for="last_name">Product Name</label> 
+						<input type="text" placeholder="Enter Product Name" name="name" class="form-control" id="last_name" required>
 					</div>
 					<div class="col-md-6 form-group">
-						<label for="producttype">Product Type</label> <select name="type"
-							id="producttype" class="form-control" required>
+						<label for="producttype">Product Type</label> 
+						<select name="type" id="producttype" class="form-control" required onchange="toggleOtherInput()">
 							<option value="mobile">MOBILE</option>
 							<option value="tv">TV</option>
 							<option value="camera">CAMERA</option>
@@ -78,29 +87,34 @@
 						</select>
 					</div>
 				</div>
+
+				<!-- Other product type input field (Initially hidden) -->
+				<div class="form-group" id="otherType" style="display:none;">
+					<label for="other">Specify Product Type</label>
+					<input type="text" name="otherType" class="form-control" placeholder="Enter the type of product">
+				</div>
+
 				<div class="form-group">
 					<label for="last_name">Product Description</label>
 					<textarea name="info" class="form-control" id="last_name" required></textarea>
 				</div>
+
 				<div class="row">
 					<div class="col-md-6 form-group">
-						<label for="last_name">Unit Price</label> <input type="number"
-							placeholder="Enter Unit Price" name="price" class="form-control"
-							id="last_name" required>
+						<label for="last_name">Unit Price</label> 
+						<input type="number" placeholder="Enter Unit Price" name="price" class="form-control" id="last_name" required>
 					</div>
 					<div class="col-md-6 form-group">
-						<label for="last_name">Stock Quantity</label> <input type="number"
-							placeholder="Enter Stock Quantity" name="quantity"
-							class="form-control" id="last_name" required>
+						<label for="last_name">Stock Quantity</label> 
+						<input type="number" placeholder="Enter Stock Quantity" name="quantity" class="form-control" id="last_name" required>
 					</div>
 				</div>
-				<div>
-					<div class="col-md-12 form-group">
-						<label for="last_name">Product Image</label> <input type="file"
-							placeholder="Select Image" name="image" class="form-control"
-							id="last_name" required>
-					</div>
+
+				<div class="form-group">
+					<label for="last_name">Product Image</label> 
+					<input type="file" placeholder="Select Image" name="image" class="form-control" id="last_name" required>
 				</div>
+
 				<div class="row">
 					<div class="col-md-6 text-center" style="margin-bottom: 2px;">
 						<button type="reset" class="btn btn-danger">Reset</button>

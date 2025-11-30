@@ -31,43 +31,45 @@ public class AddProductSrv extends HttpServlet {
 		String userName = (String) session.getAttribute("username");
 		String password = (String) session.getAttribute("password");
 
+		// Check if user is logged in and is an admin
 		if (userType == null || !userType.equals("admin")) {
-
 			response.sendRedirect("login.jsp?message=Access Denied!");
-
-		}
-
-		else if (userName == null || password == null) {
-
+			return;
+		} else if (userName == null || password == null) {
 			response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
+			return;
 		}
 
+		// Retrieve form data
 		String status = "Product Registration Failed!";
 		String prodName = request.getParameter("name");
-		String prodType = request.getParameter("type");
+		String prodType = request.getParameter("type"); // Product type from dropdown
+
+		// Check if the user selected "Other" and set the custom product type
+		String otherProductType = request.getParameter("otherType");
+		if ("other".equals(prodType) && otherProductType != null && !otherProductType.trim().isEmpty()) {
+			prodType = otherProductType; // Override product type with the custom "Other" type
+		}
+
 		String prodInfo = request.getParameter("info");
 		double prodPrice = Double.parseDouble(request.getParameter("price"));
 		int prodQuantity = Integer.parseInt(request.getParameter("quantity"));
 
+		// Handle image upload
 		Part part = request.getPart("image");
-
 		InputStream inputStream = part.getInputStream();
 
-		InputStream prodImage = inputStream;
+		// Call service to add product
+		ProductServiceImpl productService = new ProductServiceImpl();
+		status = productService.addProduct(prodName, prodType, prodInfo, prodPrice, prodQuantity, inputStream);
 
-		ProductServiceImpl product = new ProductServiceImpl();
-
-		status = product.addProduct(prodName, prodType, prodInfo, prodPrice, prodQuantity, prodImage);
-
+		// Redirect with the result message
 		RequestDispatcher rd = request.getRequestDispatcher("addProduct.jsp?message=" + status);
 		rd.forward(request, response);
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 		doGet(request, response);
 	}
-
 }
