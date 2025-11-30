@@ -7,17 +7,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.shashi.service.DiscountContext;
 
 @WebServlet("/ApplyDiscountServlet")
 public class ApplyDiscountServlet extends HttpServlet {
-
     private static final long serialVersionUID = 1L;
 
-    // >>> CHANGED: only doPost is needed
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // >>> END
-
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String code = request.getParameter("discountCode");
         double amount = 0;
 
@@ -27,25 +24,20 @@ public class ApplyDiscountServlet extends HttpServlet {
             amount = 0;
         }
 
-        double discountedAmount = amount;
+        // Create DiscountContext to handle discount logic
+        DiscountContext discountContext = new DiscountContext();
+        double discountedAmount = discountContext.applyDiscount(code, amount);
 
-        // >>> ADDED DISCOUNT RULES
-        if (code != null && code.equalsIgnoreCase("SAVE10")) {
-            discountedAmount = amount * 0.90;
-            request.setAttribute("message", "Discount Applied: 10% OFF");
-        } else if (code != null && code.equalsIgnoreCase("SAVE20")) {
-            discountedAmount = amount * 0.80;
-            request.setAttribute("message", "Discount Applied: 20% OFF");
+        // Add message based on discount application
+        if (discountedAmount < amount) {
+            request.setAttribute("message", "Discount Applied: " + (amount - discountedAmount) + " OFF");
         } else {
-            request.setAttribute("message", "Invalid Discount Code");
+            request.setAttribute("message", "Invalid or Duplicate Discount Code");
         }
-        // >>> END
 
+        // Forward to payment.jsp with the updated discounted amount
         request.setAttribute("discountedAmount", discountedAmount);
-
-        // >>> CHANGED: forward back to payment.jsp
         RequestDispatcher rd = request.getRequestDispatcher("payment.jsp");
         rd.forward(request, response);
-        // >>> END
     }
 }
